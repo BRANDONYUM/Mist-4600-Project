@@ -1,3 +1,4 @@
+
 public class Pitcher extends Player {
 	
 	private double earnRunAverage;

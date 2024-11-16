@@ -2,16 +2,16 @@ import java.util.*;
 
 public class Draft {
 	
-	private static HashSet<Player> draftedPlayers;
-	private HashMap<Team, Integer> draftOrder;
-	private static Team[] teams;
-	private Team onClock;
+	private HashSet<Player> draftedPlayers;
+	private HashMap<Integer, Team> draftOrder;
+	private Team[] teams;
 	Random rand = new Random();
 	
 	public void startDraft() {
 		
 		draftedPlayers = new HashSet<Player>();
 		teams = new Team[30];
+		draftOrder = new HashMap<Integer, Team>();
 		
 		Team az = new Team("Dimondbacks");
 		teams[0] = az;
@@ -74,15 +74,15 @@ public class Draft {
 		Team wash = new Team("Nationals");	
 		teams[29] = wash;
 		
-		
-		for(int i = 0; i < 30; i++) {
-			draftOrder.putIfAbsent(teams[1], rand.nextInt(30));
+		while(draftOrder.size() < 30) {
+			for(int i = 0; i < 30; i++) {
+				draftOrder.putIfAbsent(rand.nextInt(30), teams[i]);
+			}
 		}
 		
 		
 		System.out.println("Welcome to the 2024 MLB Draft");
-		onClock = teams[rand.nextInt(30)];
-		System.out.println(onClock.getTeamName() + " are on the clock");
+		System.out.println("The " + draftOrder.get(0).getTeamName() + " are on the clock:");
 			
 	}
 	
@@ -90,15 +90,45 @@ public class Draft {
 		draftedPlayers.add(p);
 	}
 	
-	public Team getOnClock() {
-		return onClock;
+	public Team getNextPick(int i) {
+		return draftOrder.get(i);
 	}
 	
-	public void nextPick() {
-		onClock = teams[rand.nextInt(30)];
-		System.out.println(onClock.getTeamName() + " are on the clock");
+	public HashSet<Player> getDraftedPlayers(){
+		return draftedPlayers;
 	}
 	
+	public Team[] getTeams() {
+		return teams;
+	}
+	
+	public Team getTeam(String teamName) {
+		Team t = new Team("No Name");
+		Team[] ts = getTeams();
+		for(int i = 0; i < 30; i++) {
+			if(ts[i].getTeamName().equalsIgnoreCase(teamName)) {
+				t = ts[i];
+			}
+		}
+		return t;
+	}
+	
+	public void printPitchers() {
+		for(Player p : draftedPlayers) {
+			if (p.getPosition().equalsIgnoreCase("P")) {
+				System.out.print(p.getName() + " ");
+			}
+		}
+	}
+	
+	public void printHitters() {
+		for(Player p : draftedPlayers) {
+			if(!p.getPosition().equalsIgnoreCase("P")) {
+				System.out.print(p.getName() + " ");
+			}
+		}
+	}
+		
 	
 	public static void main (String []args) {
 		
@@ -106,9 +136,9 @@ public class Draft {
 		Random random = new Random();
 		Draft d = new Draft();
 		d.startDraft();
-		boolean draftDone = false;
+		//boolean draftDone = false;
 		
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < 30; i++) {
 			System.out.println("Who would you like to draft:");
 			System.out.println("Name:");
 			String name = input.nextLine();
@@ -125,14 +155,16 @@ public class Draft {
 				double era = input.nextDouble();
 				input.nextLine();
 				Pitcher p = new Pitcher(name, num, school, pos, era);
-				if(draftedPlayers.contains(p)) {
+				if(d.getDraftedPlayers().contains(p)) {
 					System.out.println("This player has already been drafted");
 				} else {
 					d.draftPlayer(p);
-					d.getOnClock().draftPlayer(p);
+					d.draftOrder.get(i).draftPlayer(p);
 					p.print();
 					System.out.println();
-					d.nextPick();
+					if((i+1) != 30) {
+						System.out.println(d.getNextPick(i).getTeamName() + " are on the clock:");
+					}
 					
 				}
 			} else {
@@ -140,14 +172,15 @@ public class Draft {
 				double ba = input.nextDouble();
 				input.nextLine();
 				Hitter h = new Hitter(name, num, school, pos, ba);
-				if (draftedPlayers.contains(h)) {
+				if (d.getDraftedPlayers().contains(h)) {
 					System.out.println("This player has already been drafted");
 				} else {
 					d.draftPlayer(h);
-					d.getOnClock().draftPlayer(h);
 					h.print();
 					System.out.println();
-					d.nextPick();
+					if((i+1) != 30) {
+						System.out.println(d.getNextPick(i).getTeamName() + " are on the clock:");
+					}
 				}
 			}
 			
@@ -159,52 +192,59 @@ public class Draft {
 		while(!isDone) {
 			System.out.println("The following options are avalible:");
 			System.out.println("1. Print a teams drafted players:");
-			System.out.println("2. Print a players info from draft:");
-			System.out.println("3. Exit the draft");
+			System.out.println("2. Print out all hitter/pitcher from draft class:");
+			System.out.println("3. Print out the entire 2024 draft class:");
+			System.out.println("4. Exit the draft");
 			int option = input.nextInt();
 			input.nextLine();
 			
 			switch (option) {
 	
 			case 1:
-				
+				/*Team[] t = d.getTeams();
 				System.out.println("Please enter a team to list players:");
 				String team = input.nextLine();
 				for(int i = 0; i < 30; i++){
-					if(teams[i].getTeamName().equals(team)) {
-						teams[i].printTeamDraft();
+					if(t[i].getTeamName().equalsIgnoreCase(team)) {
+						t[i].printTeamDraft();
 					}
 					
-				}
+				}*/
+				System.out.println("Please enter a team to list players:");
+				String team = input.nextLine();
+				Team t = d.getTeam(team);
+				t.printTeamDraft();
+				
 				
 			
 				break;
 				
 			case 2:
-				
-				System.out.println("Please enter team name:");
-				team = input.nextLine();
-				System.out.println("Please enter player name:");
-				String playerName = input.nextLine();
-				for(int i = 0; i < 30; i++){
-					if(teams[i].getTeamName().equals(team)) {
-						for(int j = 0; i < teams[i].getTeamPlayersSize(); j++) {
-							if(teams[i].teamPlayers.get(j).getName().equals(playerName)) {
-								teams[i].teamPlayers.get(j).print();
-							}
-							else {
-								System.out.println("Invalid input:");
-							}
-						}
-					}
-					
-				}
+				System.out.println("Would you like to print out hitters or pitchrs:");
+				String printPos = input.nextLine();
+				System.out.println();
+				if(printPos.equalsIgnoreCase("Pitcher")) {
+					d.printPitchers();
+					System.out.println();
+					} else {
+						d.printHitters();
+						System.out.println();
+					}	
 				
 				
 				break;
 				
 			case 3:
 
+				for(Player p: d.getDraftedPlayers()) {
+					System.out.print(p.getName() + " ");
+				}
+				System.out.println();
+				
+				break;
+			
+			case 4:
+				
 				System.out.println("Exiting the draft.  Thank you for attending.");
 				isDone = true;
 				break;

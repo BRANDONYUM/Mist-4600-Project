@@ -1,3 +1,4 @@
+
 public class Hitter extends Player{
 	
 	private double battingAvg;
