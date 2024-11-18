@@ -69,6 +69,14 @@ public class Player {
 	public void setNumber(int number) {
 		this.number = number;
 	}
+
+	//equals override for comparing players
+	public boolean equals(Player p) {
+		if(this.number == p.getNumber() && this.school.contains(p.getSchool())) {
+			return true;
+		}
+		else return false;
+	}
 	
 	public void print() {
 		System.out.println("Name: " + name);
