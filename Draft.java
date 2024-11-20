@@ -160,18 +160,19 @@ public class Draft {
 			school = input.nextLine();
 			
 			//check to see if player was already drafted
+			boolean picked = false;
 			if(i != 0) {
 				for(Player p: draftedPlayers) {
 				
 					Player check = new Player(name,num,school,pos);
 					if(p.equals(check)) {
 						System.out.println("The player has already been drafted. Please pick another player");
+						picked = true;
 						break;
 					}
-					else {
-						pickIn = 1;
-					}
-					
+				}
+				if(!picked) {
+					pickIn = 1;
 				}
 			}
 			else {
