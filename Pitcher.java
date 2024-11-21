@@ -22,10 +22,20 @@ public class Pitcher extends Player {
 		this.earnRunAverage = earnRunAverage;
 	}
 	
+	
+	public boolean lowerERA(Pitcher p) {
+		Pitcher pitch = p;
+		if(this.earnRunAverage < p.getEarnRunAverage()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	/*
 	 * Override Player print method
 	 */
-	
 	public void print() {
 		super.print();
 		System.out.println("ERA: " + earnRunAverage);
