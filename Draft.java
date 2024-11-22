@@ -112,23 +112,101 @@ public class Draft {
 		}
 		return t;
 	}
-	
+	//lists drafted pitchers by name
 	public void printPitchers() {
 		for(Player p : draftedPlayers) {
 			if (p.getPosition().equalsIgnoreCase("P")) {
-				System.out.print(p.getName() + ", ");
+				System.out.println("-"+p.getName());
+			}
+		}
+	}
+	// prints drafted pitchers ranked by ERA
+	public void printPitchersRanked() {
+		// calculate number of pitchers drafted
+		int numPitchers = 0;
+		for(Player p : draftedPlayers) {
+			if (p.getPosition().equalsIgnoreCase("P")) {
+				numPitchers++;
+			}
+		}
+		
+		//create and populate array of pitchers to be ranked
+		Pitcher[] pitchRanks = new Pitcher[numPitchers];
+		int count = 0;
+		for(Player p : draftedPlayers) {
+			if (p.getPosition().equalsIgnoreCase("P")) {
+				pitchRanks[count] = (Pitcher) p; 
+				count++;
+			}
+		}
+		// ranks pitchRanks pitcher objects by ERA in ascending order
+		for(int i = 0; i < numPitchers - 1;i++) {
+			int rank = i;
+			for(int j = i + 1; j < numPitchers; j++) {
+				if(pitchRanks[j].lowerERA(pitchRanks[rank])) {
+					rank = j;
+					}
+			}
+			Pitcher temp = pitchRanks[rank];
+			pitchRanks[rank] = pitchRanks[i];
+			pitchRanks[i] = temp;
+		}
+		
+		for(int i = 0; i < numPitchers; i++) {
+			System.out.println("#" + (i + 1) + ". " + pitchRanks[i].getName() + ", Number " + pitchRanks[i].getNumber() + " from " + pitchRanks[i].getSchool() + " - ERA:" + pitchRanks[i].getEarnRunAverage());
+		}
+		
+	}
+	
+	// prints out hitters listed by name
+	public void printHitters() {
+		for(Player p : draftedPlayers) {
+			if(!p.getPosition().equalsIgnoreCase("P")) {
+				System.out.println("-"+p.getName());
+				
 			}
 		}
 	}
 	
-	public void printHitters() {
-		for(Player p : draftedPlayers) {
-			if(!p.getPosition().equalsIgnoreCase("P")) {
-				System.out.print(p.getName() + ", ");
-			}
+	// prints hitters ranked by batting average in descending order
+	public void printHittersRanked() {
+		 // calculate number of hitters drafted
+	    int numHitters = 0;
+	    for (Player p : draftedPlayers) {
+	        if (!p.getPosition().equalsIgnoreCase("P")) { 
+	            numHitters++;
+	        }
+	    }
+	    
+	    // create and populate array of hitters to be ranked
+	    Hitter[] hitRanks = new Hitter[numHitters];
+	    int count = 0;
+	    for (Player p : draftedPlayers) {
+	        if (!p.getPosition().equalsIgnoreCase("P")) { 
+	            hitRanks[count] = (Hitter) p;
+	            count++;
+	        }
+	    }
+	    
+	 // Rank hitterRanks hitter objects by batting average in descending order
+	    for (int i = 0; i < numHitters - 1; i++) {
+	        int rank = i;
+	        for (int j = i + 1; j < numHitters; j++) {
+	            if (hitRanks[j].betterBatAvg(hitRanks[rank])) { 
+	                rank = j;
+	            }
+	        }
+	        Hitter temp = hitRanks[rank];
+	        hitRanks[rank] = hitRanks[i];
+	        hitRanks[i] = temp;
+	    }
+	    
+	    // prints hitters ranked by BA in descending order
+	    for(int i = 0; i < numHitters; i++) {
+			System.out.println("#" + (i + 1) + ". " + hitRanks[i].getName() + ", Number " + hitRanks[i].getNumber() + " from " + hitRanks[i].getSchool() + " - AVG: " + hitRanks[i].getBattingAvg());
 		}
+	    
 	}
-		
 	
 	public static void main (String []args) {
 		
@@ -141,7 +219,7 @@ public class Draft {
 		Draft d = new Draft();
 		d.startDraft();
 		//boolean draftDone = false;
-		for(int i = 0; i < 30; i++) {
+		for(int i = 0; i < 3; i++) {
 			int pickIn = 0;
 			while(pickIn == 0) {
 			System.out.println("The " + draftOrder.get(i).getTeamName() + " are on the clock:");
@@ -158,6 +236,7 @@ public class Draft {
 			input.nextLine();
 			System.out.println("School:");
 			school = input.nextLine();
+			
 			
 			//check to see if player was already drafted
 			boolean picked = false;
@@ -239,16 +318,32 @@ public class Draft {
 				break;
 				
 			case 2:
-				System.out.println("Would you like to print out hitters or pitchers:");
+				System.out.println("Would you like to print out hitters or pitchers? For pitchers, enter \"Pitcher\"");
 				String printPos = input.nextLine();
 				System.out.println();
 				if(printPos.equalsIgnoreCase("Pitcher")) {
 					d.printPitchers();
 					System.out.println();
-					} else {
-						d.printHitters();
+					
+					System.out.println("View pitchers ranked by ERA? 1 = YES, 0 = NO");
+					int pitchResponse = input.nextInt();
+					if(pitchResponse == 1) {
+						d.printPitchersRanked();
 						System.out.println();
-					}	
+					}
+				} 
+				else {
+					d.printHitters();
+					System.out.println();
+					
+					System.out.println("View hitters ranked by batting average? 1 = YES, 0 = NO");
+					int hitResponse = input.nextInt();
+					if(hitResponse == 1) {
+						d.printHittersRanked();
+						System.out.println();
+					}
+					
+				}	
 				
 				
 				break;
@@ -256,7 +351,8 @@ public class Draft {
 			case 3:
 
 				for(Player p: d.getDraftedPlayers()) {
-					System.out.println(p.getName());
+					p.print();
+					System.out.println("**********************************");
 				}
 				System.out.println();
 				
@@ -278,3 +374,6 @@ public class Draft {
 	}
 
 }
+
+		
+				
