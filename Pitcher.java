@@ -24,7 +24,6 @@ public class Pitcher extends Player {
 	
 	
 	public boolean lowerERA(Pitcher p) {
-		Pitcher pitch = p;
 		if(this.earnRunAverage < p.getEarnRunAverage()) {
 			return true;
 		}
